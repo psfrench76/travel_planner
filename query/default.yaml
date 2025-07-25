@@ -1,0 +1,5 @@
+origin: "PDX"
+destination: "LAX"
+date_range:
+  start: "2025-12-01"
+  end: "2025-12-10"
