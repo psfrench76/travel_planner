@@ -51,7 +51,7 @@ class TestUserInputFlightsConnector(unittest.TestCase):
 
     @patch("builtins.input", side_effect=["100", "2:30", "Delta"])
     def test_search(self, mock_input):
-        result = self.connector.search("JFK", "LAX", "2023-12-01", "flight", "money")
+        result = self.connector.get_details("JFK", "LAX", "2023-12-01", "flight", "money")
         self.assertEqual(result["price"], 100.0)
         self.assertEqual(result["duration"], "2:30")
         self.assertEqual(result["airline"], "Delta")

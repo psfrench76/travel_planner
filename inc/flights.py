@@ -1,14 +1,14 @@
 from .connector import Connector
 from typing import Dict, Any
 import re
-from datetime import timedelta
+from datetime import timedelta, datetime
 import difflib
 
 class UserInputFlightsConnector(Connector):
     def __init__(self, config):
         self.airlines = config["airlines"]
 
-    def search(self, origin: str, destination: str, date: str, transportation_mode: str, payment_type: str) -> Dict[str, Any]:
+    def get_details(self, origin: str, destination: str, date: str, transportation_mode: str="flight", payment_type: str="money") -> Dict[str, Any]:
         if transportation_mode != "flight":
             raise ValueError("ExpediaFlightsConnector only supports flights.")
 
@@ -16,8 +16,10 @@ class UserInputFlightsConnector(Connector):
         print(f"Origin: {origin}, Destination: {destination}, Date: {date}, Payment Type: {payment_type}")
 
         price_input = input("Enter the price of the flight: ")
-        duration_input = input("Enter the duration of the flight: ")
-        airline_input = input("Enter the airline name or abbreviation: ")
+        #duration_input = input("Enter the duration of the flight: ")
+        #airline_input = input("Enter the airline name or abbreviation: ")
+        duration_input = "1h"
+        airline_input = "Alaska"
 
         price = self.parse_price(price_input)
         duration = self.parse_duration(duration_input)
@@ -28,6 +30,12 @@ class UserInputFlightsConnector(Connector):
             "duration": duration,
             "airline": airline
         }
+
+    def get_price(self, origin: str, destination: str, date: str):
+        price_input = input(f"Enter the price of the flight for date {date.strftime("%Y-%m-%d")}: (or type 'done' to exit calendar mode): ")
+        if price_input.lower() == "done":
+            return None
+        return self.parse_price(price_input)
 
     def match_airline(self, airline_input: str) -> str:
         """Matches the airline input to the dictionary or suggests the closest match."""
