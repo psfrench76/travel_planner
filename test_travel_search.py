@@ -2,7 +2,7 @@
 import unittest
 import yaml
 from unittest.mock import patch
-from scraper import CacheManager, UserInputFlightsConnector, TravelSearch
+from travel_search import CacheManager, UserInputFlightsConnector, TravelSearch
 
 class TestCacheManager(unittest.TestCase):
     def setUp(self):
