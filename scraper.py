@@ -1,10 +1,13 @@
-import requests
 import json
 import os
 import time
-from abc import ABC, abstractmethod
 from typing import Dict, Any
 import yaml
+from inc.flights import UserInputFlightsConnector
+from inc.connector import Connector
+import argparse
+
+#TODO - deal with baggage requirements. Should build into queries and have costs in settings
 
 class ConfigLoader:
     """Loads program settings from a YAML config file."""
@@ -17,7 +20,7 @@ class ConfigLoader:
 
 class QueryLoader:
     """Loads query settings from a YAML config file."""
-    QUERY_FILE = "./query.yaml"
+    QUERY_FILE = "./query/default.yaml"
 
     @staticmethod
     def load_query() -> Dict[str, Any]:
@@ -46,33 +49,9 @@ class CacheManager:
             json.dump({"timestamp": time.time(), "result": result}, f)
 
 
-class Connector(ABC):
-    """Abstract base class for all connectors."""
-    @abstractmethod
-    def search(self, origin: str, destination: str, date: str, transportation_mode: str, payment_type: str) -> Dict[str, Any]:
-        pass
 
 
-class ExpediaFlightsConnector(Connector):
-    def __init__(self, config: Dict[str, Any]):
-        self.base_url = config["connectors"]["expedia_flights"]["base_url"]
-
-    def search(self, origin: str, destination: str, date: str, transportation_mode: str, payment_type: str) -> Dict[str, Any]:
-        params = {
-            "origin": origin,
-            "destination": destination,
-            "date": date,
-            "transportation_mode": transportation_mode,
-            "payment_type": payment_type
-        }
-        response = requests.get(self.base_url, params=params)
-        if response.status_code == 200:
-            return {"flight_number": "123", "connections": 1, "cost": 200}
-        else:
-            raise Exception(f"Failed to fetch data from Expedia: {response.status_code}")
-
-
-class Scraper:
+class TravelSearch:
     """Main scraper class that manages connectors and caching."""
     def __init__(self, config: Dict[str, Any]):
         self.connectors = {}
@@ -98,20 +77,28 @@ class Scraper:
 
 
 if __name__ == "__main__":
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Travel planning app")
+    parser.add_argument("--force-refresh", "-f", action="store_true", help="Force cache refresh for queries")
+    args = parser.parse_args()
+
+    # Load configuration and query
     config = ConfigLoader.load_config()
     query = QueryLoader.load_query()
 
-    scraper = Scraper(config)
-    expedia_connector = ExpediaFlightsConnector(config)
-    scraper.register_connector("expedia_flights", expedia_connector)
+    # Initialize scraper and connector
+    scraper = TravelSearch(config)
+    flights_connector = UserInputFlightsConnector(config)
+    scraper.register_connector("flights_connector", flights_connector)
 
+    # Perform search with the force-refresh flag
     result = scraper.search(
-        "expedia_flights",
+        "flights_connector",
         query["origin"],
         query["destination"],
         query["date_range"]["start"],
         "flight",  # Transportation mode
         "money",   # Payment type
-        force_refresh=False
+        force_refresh=args.force_refresh
     )
     print(result)

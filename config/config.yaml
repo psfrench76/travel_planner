@@ -1,5 +1,10 @@
 cache_dir: "./cache"
 cache_timeout: 43200  # 12 hours in seconds
-connectors:
-  expedia_flights:
-    base_url: "https://www.expedia.com/Flights-Search"
+
+airlines:
+  Alaska: "AS"
+  Delta: "DL"
+  United: "UA"
+  Frontier: "F9"
+  Spirit: "NK"
+  British Airways: "BA"
