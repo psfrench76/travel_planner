@@ -1,6 +1,4 @@
 # Python
-import os
-import json
 from inc.cache_manager import CacheManager
 from inc.flights import UserInputFlightsConnector
 from travel_search import ConfigLoader

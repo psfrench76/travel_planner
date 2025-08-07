@@ -1,13 +1,12 @@
 # Python
 import json
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any
 import yaml
 from inc.flight_graph import FlightGraph
 from inc.flights import UserInputFlightsConnector
 from inc.connector import Connector
 from inc.cache_manager import CacheManager
-from datetime import datetime
 
 
 # TODO: What about intermediate stops? What if I want to fly into frankfurt and then take a train to ghent?
