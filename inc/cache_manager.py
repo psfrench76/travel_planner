@@ -4,7 +4,9 @@ import os
 import time
 from typing import Dict, Any
 
+
 class CacheManager:
+
     def __init__(self, config: Dict[str, Any]):
         self.cache_dir = config["cache_dir"]
         self.cache_timeout = config["cache_timeout"]
@@ -23,10 +25,7 @@ class CacheManager:
     def set_cache(self, key: str, result: Dict[str, Any]):
         cache_file = os.path.join(self.cache_dir, f"{key}.json")
         with open(cache_file, "w") as f:
-            json.dump({
-                "timestamp": time.time(),
-                "result": result
-            }, f)
+            json.dump({"timestamp": time.time(), "result": result}, f)
 
     def output_cache(self):
         """Outputs the full cache for debugging."""

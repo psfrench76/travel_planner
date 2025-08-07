@@ -6,6 +6,7 @@ from inc.flights import UserInputFlightsConnector
 from travel_search import ConfigLoader
 from datetime import datetime, timedelta
 
+
 def main():
     # Load configuration from config.yaml
     config = ConfigLoader.load_config()
@@ -16,7 +17,6 @@ def main():
     in_cal = False
     transportation_mode = "flight"
     payment_type = "money"
-
 
     while True:
         # Prompt user for flight details
@@ -51,13 +51,12 @@ def main():
                     print("Exiting calendar mode.")
                     in_cal = False
                     continue
-                flight_details = {
-                    "price": price,
-                    "duration": "1h",  # Duration not available in calendar mode
-                    "airline": "Delta"    # Airline not available in calendar mode
+                flight_details = {"price": price, "duration": "1h",  # Duration not available in calendar mode
+                    "airline": "Delta"  # Airline not available in calendar mode
                 }
             else:
-                flight_details = flights_connector.get_details(origin, destination, date, transportation_mode, payment_type)
+                flight_details = flights_connector.get_details(origin, destination, date, transportation_mode,
+                                                               payment_type)
         except ValueError as e:
             print(f"Error: {e}")
             continue
@@ -66,14 +65,10 @@ def main():
         cache_key = f"{origin}_{destination}_{date.strftime("%Y-%m-%d")}_{transportation_mode}_{payment_type}"
 
         # Add flight details to cache
-        cache_manager.set_cache(cache_key, {
-            "origin": origin,
-            "destination": destination,
-            "date": date.strftime("%Y-%m-%d"),
-            "price": flight_details["price"],
-            "duration": flight_details["duration"],
-            "airline": flight_details["airline"]
-        })
+        cache_manager.set_cache(cache_key,
+                                {"origin": origin, "destination": destination, "date": date.strftime("%Y-%m-%d"),
+                                    "price": flight_details["price"], "duration": flight_details["duration"],
+                                    "airline": flight_details["airline"]})
 
         print("Flight details successfully added to the cache.")
 

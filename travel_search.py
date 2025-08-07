@@ -9,6 +9,7 @@ from inc.connector import Connector
 from inc.cache_manager import CacheManager
 from datetime import datetime
 
+
 # TODO: What about intermediate stops? What if I want to fly into frankfurt and then take a train to ghent?
 #   I want to be able to route through hubs without having to specify a stop.
 # TODO: What about rental cars
@@ -24,8 +25,10 @@ class ConfigLoader:
         with open(ConfigLoader.CONFIG_FILE, "r") as f:
             return yaml.safe_load(f)
 
+
 class TravelSearch:
     """Main scraper class that manages connectors and caching."""
+
     def __init__(self, config: Dict[str, Any]):
         self.connectors = {}
         self.cache_manager = CacheManager(config)
@@ -33,7 +36,8 @@ class TravelSearch:
     def register_connector(self, name: str, connector: Connector):
         self.connectors[name] = connector
 
-    def search(self, connector_name: str, origin: str, destination: str, date: str, transportation_mode: str, payment_type: str, force_refresh: bool = False) -> Dict[str, Any]:
+    def search(self, connector_name: str, origin: str, destination: str, date: str, transportation_mode: str,
+               payment_type: str, force_refresh: bool = False) -> Dict[str, Any]:
         # Output cache for debugging
         self.cache_manager.output_cache()
 
@@ -51,6 +55,7 @@ class TravelSearch:
         self.cache_manager.set_cache(cache_key, result)
         return result
 
+
 if __name__ == "__main__":
     # Load configuration
     config = ConfigLoader.load_config()
@@ -61,28 +66,23 @@ if __name__ == "__main__":
 
     # Output cache for debugging
     cache_manager = CacheManager(config)
-    #cache_manager.output_cache()
+    # cache_manager.output_cache()
 
     # Load cached journey legs into the graph
     for cache_file in os.listdir(config["cache_dir"]):
         if cache_file.endswith(".json"):
             with open(os.path.join(config["cache_dir"], cache_file), "r") as f:
                 cached_data = json.load(f)["result"]
-                flight_graph.add_leg(
-                    cached_data["origin"].upper(),
-                    cached_data["destination"].upper(),
-                    cached_data["date"],
-                    cached_data["price"],
-                    cached_data["duration"],
-                    cached_data["airline"]
-                )
+                flight_graph.add_leg(cached_data["origin"].upper(), cached_data["destination"].upper(),
+                    cached_data["date"], cached_data["price"], cached_data["duration"], cached_data["airline"])
 
     # Prompt user for origin and destinations
     origin = input("Enter the origin: ").strip().upper()
     destinations = {}
     constraints = {}
     while True:
-        destination = input("Enter destination (or type 'done' to finish, or 'const' to enter date constraints): ").strip().upper()
+        destination = input(
+            "Enter destination (or type 'done' to finish, or 'const' to enter date constraints): ").strip().upper()
         if destination.lower() == "done":
             break
         if destination.lower() == "const":

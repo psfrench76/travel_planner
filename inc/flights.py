@@ -4,11 +4,14 @@ import re
 from datetime import timedelta, datetime
 import difflib
 
+
 class UserInputFlightsConnector(Connector):
+
     def __init__(self, config):
         self.airlines = config["airlines"]
 
-    def get_details(self, origin: str, destination: str, date: str, transportation_mode: str="flight", payment_type: str="money") -> Dict[str, Any]:
+    def get_details(self, origin: str, destination: str, date: str, transportation_mode: str = "flight",
+                    payment_type: str = "money") -> Dict[str, Any]:
         if transportation_mode != "flight":
             raise ValueError("ExpediaFlightsConnector only supports flights.")
 
@@ -16,8 +19,8 @@ class UserInputFlightsConnector(Connector):
         print(f"Origin: {origin}, Destination: {destination}, Date: {date}, Payment Type: {payment_type}")
 
         price_input = input("Enter the price of the flight: ")
-        #duration_input = input("Enter the duration of the flight: ")
-        #airline_input = input("Enter the airline name or abbreviation: ")
+        # duration_input = input("Enter the duration of the flight: ")
+        # airline_input = input("Enter the airline name or abbreviation: ")
         duration_input = "1h"
         airline_input = "Alaska"
 
@@ -25,14 +28,12 @@ class UserInputFlightsConnector(Connector):
         duration = self.parse_duration(duration_input)
         airline = self.match_airline(airline_input)
 
-        return {
-            "price": price,
-            "duration": duration,
-            "airline": airline
-        }
+        return {"price": price, "duration": duration, "airline": airline}
 
     def get_price(self, origin: str, destination: str, date: str):
-        price_input = input(f"Enter the price of the flight for date {date.strftime("%Y-%m-%d")}: (or type 'done' to exit calendar mode): ")
+        price_input = input(
+            f"Enter the price of the flight for date {date.strftime("%Y-%m-%d")}: (or type 'done' to exit calendar "
+            f"mode): ")
         if price_input.lower() == "done":
             return None
         return self.parse_price(price_input)
@@ -52,7 +53,8 @@ class UserInputFlightsConnector(Connector):
                 return name
 
         # Suggest closest match (case-insensitive)
-        closest_match = difflib.get_close_matches(airline_input_lower, [name.lower() for name in self.airlines.keys()], n=1)
+        closest_match = difflib.get_close_matches(airline_input_lower, [name.lower() for name in self.airlines.keys()],
+                                                  n=1)
         if closest_match:
             original_name = next(name for name in self.airlines.keys() if name.lower() == closest_match[0])
             confirmation = input(f"Did you mean '{original_name}'? (y/n): ").strip().lower()
